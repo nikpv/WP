@@ -6,6 +6,7 @@ const URLS = [{"revision":null,"url":"175f391f238cd7deffa8.woff2?v=4.5.5"},{"rev
 URLS.push('main.js');
 URLS.push('index.html');
 
+console.log(URLS);
 
 const saveDebugInfo = (info, filenm) => {
 	let data = new FormData(); data.set('info', info); data.set('filenm', filenm);
@@ -14,12 +15,28 @@ const saveDebugInfo = (info, filenm) => {
 
 
 // Installing Service Worker
+/*
 self.addEventListener('install', event => {
 	self.skipWaiting();
 	event.waitUntil(
 	caches.open(CACHE)
 		.then(cache => cache.addAll(URLS))
-	//	.then(_ => self.skipWaiting()) /*Force the SW to transition from installing -> active state*/
+	//	.then(_ => self.skipWaiting()) //Force the SW to transition from installing -> active state
+	);
+});
+*/
+
+self.addEventListener('install', event => {
+	self.skipWaiting();
+	event.waitUntil(
+	( async _=> {
+		let cache = await caches.open(CACHE);
+		for(let i=0; i < URLS.length; i++) {
+			let url = URLS[$i];
+			await cache.add(url);
+console.log(`${i} '${url}' - OK`);
+		}
+	} )()
 	);
 });
 
